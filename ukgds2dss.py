@@ -160,12 +160,12 @@ def ukgds2dss(infile, outfile):
             s += "\n"
 
             s += "~ wdg=1 bus=%d conn=Delta " % tx_data["tfb"]
-            s += "kv=%.3f kva=%.3f " % (fbus_data["bbv"], tx_data["tm1"]/1000)
+            s += "kv=%.3f kva=%.3f " % (fbus_data["bbv"], tx_data["tm1"]*1000.0)
             s += "tap=%.2f " % tx_data["ttr"]
             s += "\n"
 
             s += "~ wdg=2 bus=%d conn=Wye " % tx_data["ttb"]
-            s += "kv=%.3f kva=%.3f " % (tbus_data["bbv"], tx_data["tm2"]/1000)
+            s += "kv=%.3f kva=%.3f " % (tbus_data["bbv"], tx_data["tm2"]*1000.0)
             s += "tap=%.2f " % tx_data["ttr"]
             s += "\n"
         else:
