@@ -1,14 +1,14 @@
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 #  Modification 2021 Desen Kirli (desen.kirli@ed.ac.uk)
 #
-#  This version of the below-mentioned software is modified and adapted from 
-#  Python 2 to Python 3 as Python 2 reached end of life (EOL) on  01/01/2020. 
+#  This version of the below-mentioned software is modified and adapted from
+#  Python 2 to Python 3 as Python 2 reached end of life (EOL) on  01/01/2020.
 #  Another new feature is the commandline input for converting the named or all
 #  co-located XLS files to DSS format. This code was adapted to be used in my
 #  PhD project and it is made available for other researchers that may find it
 #  useful.
-#------------------------------------------------------------------------------
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 #  Copyright (c) 2008 Richard W. Lincoln
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,7 +28,7 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 #  IN THE SOFTWARE.
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 #
 
 
@@ -41,9 +41,9 @@
     @see: https://github.com/desenk/ukgds2dss-py3 for the Python 3 version
 """
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 #  Imports:
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 # Operating system routines.
 import os
@@ -54,13 +54,14 @@ import xlrd
 # System module to interract with command-line arguments
 import sys
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 #  "ukgds2dss" function:
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+
 
 def ukgds2dss(infile, outfile):
-    """ Extracts UKGDS data from an Excel spreadsheet and write it to a text
-        file in OpenDSS format.
+    """Extracts UKGDS data from an Excel spreadsheet and write it to a text
+    file in OpenDSS format.
     """
 
     # Check that the path to the inputfile is valid.
@@ -74,8 +75,17 @@ def ukgds2dss(infile, outfile):
     s = ""
 
     # Expected spreadsheet names in the Excel workbook.
-    sheet_names = ["System", "Buses", "Loads", "Generators", "Transformers",
-        "IndGenerators", "Shunts", "Branches", "Taps"]
+    sheet_names = [
+        "System",
+        "Buses",
+        "Loads",
+        "Generators",
+        "Transformers",
+        "IndGenerators",
+        "Shunts",
+        "Branches",
+        "Taps",
+    ]
 
     # Provide warning if an expected sheet is not found in the workbook.
     # Ignore case for comparison.
@@ -98,16 +108,15 @@ def ukgds2dss(infile, outfile):
             # Coerce and format row values according to type.
             pretty_values = get_row_values(sys_sheet, row_idx)
 
-            symbols = ['smb', 'std', 'ssb', 'spt']
+            symbols = ["smb", "std", "ssb", "spt"]
             # Dictionary mapping symbols to values (Skip first column).
             # @see: http://en.wikibooks.org/wiki/Python_Programming/Dictionaries
-            system_data[symbols[row_idx-29]] = pretty_values[2]
+            system_data[symbols[row_idx - 29]] = pretty_values[2]
 
         s += "! %s\n" % system_data["std"]
-        s += "new object=circuit.%s\n" % "name" # FIXME: Circuit name.
+        s += "new object=circuit.%s\n" % "name"  # FIXME: Circuit name.
         s += "~ basekv=%.3f" % system_data["smb"]
         s += "\n\n"
-
 
     # Branch sheet ------------------------------------------------------------
 
@@ -119,21 +128,34 @@ def ukgds2dss(infile, outfile):
             # Coerce and format row values according to type.
             pretty_values = get_row_values(branch_sheet, row_idx)
             # Column symbols as defined on row 29 of the spreadsheet.
-            symbols = ['cfb', 'ctb', 'cid', 'cr1', 'cx1', 'cb1', 'cr0', 'cx0',
-                'cb0', 'cm1', 'cm2', 'cm3', 'cle', 'cst']
+            symbols = [
+                "cfb",
+                "ctb",
+                "cid",
+                "cr1",
+                "cx1",
+                "cb1",
+                "cr0",
+                "cx0",
+                "cb0",
+                "cm1",
+                "cm2",
+                "cm3",
+                "cle",
+                "cst",
+            ]
             branch_data = dict(zip(symbols, pretty_values[1:]))
 
-            s += "New Line.L%d " % (row_idx-29)
+            s += "New Line.L%d " % (row_idx - 29)
             s += "Bus1=%d Bus2=%d " % (branch_data["cfb"], branch_data["ctb"])
             s += "R1=%.3f X1=%.3f " % (branch_data["cr1"], branch_data["cx1"])
             s += "C1=%.3f R0=%.3f " % (branch_data["cb1"], branch_data["cr0"])
             s += "X0=%.3f C0=%.3f " % (branch_data["cx0"], branch_data["cb0"])
-            s += "Emergamps=%.3f " % branch_data["cm1"] # FIXME: Line ratings
+            s += "Emergamps=%.3f " % branch_data["cm1"]  # FIXME: Line ratings
             s += "Length=%.3f Units=km" % branch_data["cle"]
-            s += "\n" # New line.
+            s += "\n"  # New line.
         else:
             s += "\n"
-
 
     # Bus sheet ---------------------------------------------------------------
 
@@ -146,13 +168,23 @@ def ukgds2dss(infile, outfile):
             # Coerce and format row values according to type.
             pretty_values = get_row_values(bus_sheet, row_idx)
             # Column symbols as defined on row 29 of the spreadsheet.
-            symbols = ["bnu", "bna", "bxc", "byc", "bbv", "bty", "bst", "btv",
-                "bvn", "bvx", "bva"]
+            symbols = [
+                "bnu",
+                "bna",
+                "bxc",
+                "byc",
+                "bbv",
+                "bty",
+                "bst",
+                "btv",
+                "bvn",
+                "bvx",
+                "bva",
+            ]
             bus_data = dict(zip(symbols, pretty_values[1:]))
 
             # Map buses according to their number.
             buses_data[bus_data["bnu"]] = bus_data
-
 
     # Transformer sheet -------------------------------------------------------
 
@@ -164,29 +196,49 @@ def ukgds2dss(infile, outfile):
             # Coerce and format row values according to type.
             pretty_values = get_row_values(tx_sheet, row_idx)
             # Column symbols as defined on row 29 of the spreadsheet.
-            symbols = ['tfb', 'ttb', 'tid', 'tr1', 'tx1', 'tr0', 'tx0', 'tre',
-                'txe', 'til', 'tmc', 'tm1', 'tm2', 'tm3', 'tst', 'ttr', 'ttx',
-                'ttn', 'ttp', 'twc', 'tps', 'tcb']
+            symbols = [
+                "tfb",
+                "ttb",
+                "tid",
+                "tr1",
+                "tx1",
+                "tr0",
+                "tx0",
+                "tre",
+                "txe",
+                "til",
+                "tmc",
+                "tm1",
+                "tm2",
+                "tm3",
+                "tst",
+                "ttr",
+                "ttx",
+                "ttn",
+                "ttp",
+                "twc",
+                "tps",
+                "tcb",
+            ]
             tx_data = dict(zip(symbols, pretty_values[1:]))
 
             fbus_data = buses_data[tx_data["tfb"]]
             tbus_data = buses_data[tx_data["ttb"]]
 
-            s += "New Transformer.T%d" % (row_idx-29)
+            s += "New Transformer.T%d" % (row_idx - 29)
             s += "\n"
 
             s += "~ wdg=1 bus=%d conn=Delta " % tx_data["tfb"]
-            s += "kv=%.3f kva=%.3f " % (fbus_data["bbv"], tx_data["tm1"]*1000.0)
+            s += "kv=%.3f kva=%.3f " % (fbus_data["bbv"], tx_data["tm1"] * 1000.0)
             s += "tap=%.2f " % tx_data["ttr"]
             s += "\n"
 
             s += "~ wdg=2 bus=%d conn=Wye " % tx_data["ttb"]
-            s += "kv=%.3f kva=%.3f " % (tbus_data["bbv"], tx_data["tm2"]*1000.0)
+            s += "kv=%.3f kva=%.3f " % (tbus_data["bbv"], tx_data["tm2"] * 1000.0)
             s += "tap=%.2f " % tx_data["ttr"]
             s += "\n"
         else:
             s += "\n"
-
 
     # Generator sheet ---------------------------------------------------------
 
@@ -196,18 +248,33 @@ def ukgds2dss(infile, outfile):
 
         for row_idx in range(29, gen_sheet.nrows):
             pretty_values = get_row_values(gen_sheet, row_idx)
-            symbols = ['gbn', 'gid', 'gpo', 'gpx', 'gpn', 'gqa', 'gqx', 'gqn',
-                'gty', 'gst', 'gcb', 'gmb', 'gr1', 'gx1', 'gr0', 'gx0']
+            symbols = [
+                "gbn",
+                "gid",
+                "gpo",
+                "gpx",
+                "gpn",
+                "gqa",
+                "gqx",
+                "gqn",
+                "gty",
+                "gst",
+                "gcb",
+                "gmb",
+                "gr1",
+                "gx1",
+                "gr0",
+                "gx0",
+            ]
             gen_data = dict(zip(symbols, pretty_values[1:]))
 
             bus_data = buses_data[gen_data["gbn"]]
 
-            s += "New Generator.G%d " % (row_idx-29)
+            s += "New Generator.G%d " % (row_idx - 29)
             s += "bus1=%d kv=%.3f " % (gen_data["gbn"], bus_data["bbv"])
             s += "\n"
         else:
             s += "\n"
-
 
     # Load sheet --------------------------------------------------------------
 
@@ -220,17 +287,16 @@ def ukgds2dss(infile, outfile):
             symbols = ["lbn", "lid", "lpo", "lqa", "lty", "lst"]
             load_data = dict(zip(symbols, pretty_values[1:]))
 
-    #        print("LOAD:", load_data)
+            #        print("LOAD:", load_data)
 
             bus_data = buses_data[load_data["lbn"]]
 
-            s += "New Load.L%d " % (row_idx-29)
+            s += "New Load.L%d " % (row_idx - 29)
             s += "bus1=%d kv=%.3f " % (load_data["lbn"], bus_data["bbv"])
             s += "kw=%.3f kvar=%.3f " % (load_data["lpo"], load_data["lqa"])
             s += "\n"
         else:
             s += "\n"
-
 
     # Shunt sheet -------------------------------------------------------------
 
@@ -241,11 +307,11 @@ def ukgds2dss(infile, outfile):
             symbols = ["shb", "shi", "shr", "shx", "shs"]
             shunt_data = dict(zip(symbols, pretty_values[1:]))
 
-#            print("SHUNT:", shunt_data)
+    #            print("SHUNT:", shunt_data)
 
-    #--------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     #  Write the text to the output file:
-    #--------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     fd = None
     try:
@@ -257,13 +323,14 @@ def ukgds2dss(infile, outfile):
         if fd is not None:
             fd.close()
 
-#------------------------------------------------------------------------------
-#  Coerce and format row values according to their type:
-#------------------------------------------------------------------------------
 
-#def format_row(types, values):
+# ------------------------------------------------------------------------------
+#  Coerce and format row values according to their type:
+# ------------------------------------------------------------------------------
+
+# def format_row(types, values):
 def get_row_values(sheet, row_idx):
-    """ Coerces and formats row values according to their type. """
+    """Coerces and formats row values according to their type."""
 
     # Data types for each cell in the row. @see: format_row() below.
     types = sheet.row_types(row_idx)
@@ -279,8 +346,14 @@ def get_row_values(sheet, row_idx):
     for i, value in enumerate(values):
 
         # Mapping of codes used by xlrd to types.
-        type_codes = {0: "empty", 1: "str", 2: "float", 3: "date",
-            4: "bool", 5: "error"}
+        type_codes = {
+            0: "empty",
+            1: "str",
+            2: "float",
+            3: "date",
+            4: "bool",
+            5: "error",
+        }
 
         # The type associated with the value.
         value_type = type_codes[types[i]]
@@ -303,21 +376,24 @@ def get_row_values(sheet, row_idx):
 
     return return_row
 
-def ukgds2dss_all(path = os.getcwd()):
-    """ Applies the ukgds2dss function to all XLS files in the given directory (default is set to the current working directory)
-    """
+
+def ukgds2dss_all(path=os.getcwd()):
+    """Applies the ukgds2dss function to all XLS files in the given directory (default is set to the current working directory)"""
     for filename in os.listdir(path):
         if filename.endswith(".xls"):
             UKGDS_FILE = filename
             # Define the path to which the output should be written.
             # In this case, output files are directed to the current working directory
-            OPENDSS_FILE = "" + filename.split('.')[0] + ".dss"
+            OPENDSS_FILE = "" + filename.split(".")[0] + ".dss"
             # Call the conversion function.
             ukgds2dss(UKGDS_FILE, OPENDSS_FILE)
             # Print output filename
             print("output:", OPENDSS_FILE)
     # Print total number of files converted succesfully.
-    print(len([f for f in os.listdir(path) if f.endswith(".dss")]), "files successfully converted to .dss format. \n")
+    print(
+        len([f for f in os.listdir(path) if f.endswith(".dss")]),
+        "files successfully converted to .dss format. \n",
+    )
 
 
 # #------------------------------------------------------------------------------
@@ -331,13 +407,13 @@ if __name__ == "__main__":
     # Check the number of XLS files in the directory and print a message if there are none.
     if len([f for f in os.listdir(path) if f.endswith(".xls")]) < 1:
         print("\nNo XLS files found in your current working directory. \n")
-    
+
     # Check if any command-line argument was entered and if not, print a message with examples
     if len(sys.argv) > 1:
         # If all is the input argument, convert all XLS files in the directory to DSS format.
         if sys.argv[1] == "all":
-            ukgds2dss_all(path)                
-            
+            ukgds2dss_all(path)
+
         else:
             filename = str(sys.argv[1])
             UKGDS_FILE = filename + ".xls"
@@ -345,7 +421,7 @@ if __name__ == "__main__":
             ukgds2dss(UKGDS_FILE, OPENDSS_FILE)
             print("output:", OPENDSS_FILE)
     else:
-            print("\n***Please enter an argument. \n\n all: to convert all files in the directory e.g. python ukgds-py3 all \n\n filename: to convert only the named XLS file to DSS format e.g. python ukgds-py3 ehv1\n\n")
+        print(
+            "\n***Please enter an argument. \n\n all: to convert all files in the directory e.g. python ukgds-py3 all \n\n filename: to convert only the named XLS file to DSS format e.g. python ukgds-py3 ehv1\n\n"
+        )
 # # EOF -------------------------------------------------------------------------
-
-
