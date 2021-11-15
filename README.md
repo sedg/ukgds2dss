@@ -2,7 +2,7 @@
 
 Convert [UKGDS][SEDG] spreadsheet [data][ukgds] into [OpenDSS][] scripts.
 
-## Usage (Python 3):
+## Usage:
 
     >>> from ukgds2dss import *
     >>> ukgds2dss("/path/to/ehv3.xls", "/path/to/ehv3.dss")
@@ -11,7 +11,7 @@ Convert [UKGDS][SEDG] spreadsheet [data][ukgds] into [OpenDSS][] scripts.
     >>> ukgds2dss_all() # the default path is set to your current working directory
     >>> ukgds2dss_all(path = "/path/to") # or specify the path to your input files
 
-## Command-line use for ukgds2dss.py (Python 3):
+## Command-line use for ukgds2dss.py:
     >>> # Convert all XLS files in the directory to DSS format.
     >>> python ukgds2dss.py all
     >>>
